@@ -1,0 +1,70 @@
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, Sparkles } from "@react-three/drei";
+import { useRef } from "react";
+
+import { AxesHelper } from "three";
+import { useThree } from "@react-three/fiber";
+
+const RotatingCube = () => {
+  // const meshRef: MutableRefObject<undefined> = useRef();
+  const meshRef = useRef(null);
+
+  useFrame(() => {
+    if (meshRef.current) {
+      meshRef.current.rotation.y += 0.01;
+      meshRef.current.rotation.x += 0.01;
+    }
+  });
+
+  // A low-poly hexagonal prism
+  {/* <cylinderGeometry args={[1, 1, 1, 6]} /> // 6 sides */ }
+
+  // A smoother cylinder
+  {/* <cylinderGeometry args={[1, 1, 1, 64]} /> // 64 sides */ }
+
+
+  return (
+    <mesh ref={meshRef} visible position={[0, 0, 0]}>
+      <cylinderGeometry args={[1, 1, 1, 64]} />
+      <meshLambertMaterial color={"#468585"} emissive={"#468585"} />
+
+      <Sparkles count={100} size={6} scale={1} speed={0.002} noise={0.2} color={"orange"} />
+    </mesh>
+  )
+}
+
+// Debug helper
+const SceneHelper = () => {
+  const { scene } = useThree();
+  scene.add(new AxesHelper(5));
+  return null;
+};
+
+const App = () => {
+  return (
+    <Canvas style={{
+      height: '100vh', width: '100vw', display: 'flex',
+      justifyContent: 'center', alignItems: 'center'
+    }}>
+      <OrbitControls enableZoom enablePan enableRotate />
+      {/* <OrbitControls enableZoom={true} enablePan={true} enableRotate={true} /> // also works */}
+
+      {/* Debug helper */}
+      {/* <SceneHelper /> */}
+
+      {/* Lights */}
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[1, 1, 1]} intensity={10} color={0x9CDBA6} />
+
+      {/* Background Color */}
+      <color attach="background" args={["black"]} />
+      {/* <color attach="background" args={["#F0F0F0"]} /> */}
+
+      {/* Rotating Cube */}
+      <RotatingCube />
+
+    </Canvas>
+  )
+}
+
+export default App;
